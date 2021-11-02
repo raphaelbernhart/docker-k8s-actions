@@ -1,0 +1,96 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: docker-k8s-action
+  namespace: personal
+  labels:
+    env: dev
+    owner: raphaelbernhart
+spec:
+  selector:
+    matchLabels:
+      app: docker-k8s-action
+  replicas: 2
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: docker-k8s-action
+    spec:
+      containers:
+      - name: docker-k8s-action
+        image: registry.raphaelbernhart.at/thecampers/docker-k8s-action:0.0.1
+        livenessProbe:
+          failureThreshold: 5
+          httpGet:
+            path: /
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 5
+          successThreshold: 2
+          timeoutSeconds: 5
+        readinessProbe:
+          failureThreshold: 5
+          httpGet:
+            path: /
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 5
+          successThreshold: 2
+          timeoutSeconds: 5
+        ports:
+        - containerPort: 8080
+        resources:
+          requests:
+            memory: "30M"
+            cpu: "5m"
+          limits:
+            memory: "50M"
+            cpu: "10m"
+      imagePullSecrets:
+      - name: regcred
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: docker-k8s-action
+  namespace: personal
+  annotations:
+    metallb.universe.tf/address-pool: production-public-ips
+spec:
+  selector:
+    app: docker-k8s-action
+  ports:
+  - port: 80
+    targetPort: 8080
+
+---
+
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: docker-k8s-action
+  namespace: personal
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    external-dns.alpha.kubernetes.io/hostname: docker-k8s-action.raphaelbernhart.at
+spec:
+  tls:
+  - hosts:
+    - docker-k8s-action.raphaelbernhart.at
+    secretName: docker-k8s-action-raphaelbernhart-at
+  rules:
+  - host: docker-k8s-action.raphaelbernhart.at
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: docker-k8s-action
+          servicePort: 80
