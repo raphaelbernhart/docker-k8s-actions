@@ -23,7 +23,7 @@ spec:
     spec:
       containers:
       - name: docker-k8s-action
-        image: registry.raphaelbernhart.at/thecampers/docker-k8s-action:0.0.1
+        image: registry.raphaelbernhart.at/raphaelbernhart/docker-k8s-action:0.0.1
         livenessProbe:
           failureThreshold: 5
           httpGet:
