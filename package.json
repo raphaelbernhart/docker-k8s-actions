@@ -1,0 +1,23 @@
+{
+  "name": "docker-k8s-actions",
+  "version": "0.0.1",
+  "description": "A collection of actions for building, testing, pushing and deploying docker applications to k8s.",
+  "main": "app.js",
+  "scripts": {
+    "docker:build": "docker build -t registry.raphaelbernhart.at/raphaelbernhart/docker-k8s-action:$npm_package_version .",
+    "docker:run": "docker run registry.raphaelbernhart.at/raphaelbernhart/docker-k8s-action:$npm_package_version"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/raphaelbernhart/docker-k8s-actions.git"
+  },
+  "author": "Raphael Bernhart",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/raphaelbernhart/docker-k8s-actions/issues"
+  },
+  "homepage": "https://github.com/raphaelbernhart/docker-k8s-actions#readme",
+  "dependencies": {
+    "systeminformation": "^5.9.9"
+  }
+}
